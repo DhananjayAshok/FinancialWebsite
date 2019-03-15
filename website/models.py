@@ -41,5 +41,3 @@ class StockShell(db.Model):
 
 	def __repr__(self):
 		return f"Stock('{self.name}')"
-
-	db.create_all() # Why do I need this
