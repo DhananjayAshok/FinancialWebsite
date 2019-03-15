@@ -44,3 +44,8 @@ class RedeemAccountForm(FlaskForm):
 	# user = session['user']
 	answer = StringField("Pointless Label")
 	submit = SubmitField('Submit') 
+
+class ResetPasswordForm(FlaskForm):
+	password = PasswordField('New Password', validators=[DataRequired()])
+	confirm_password = PasswordField('Confirm New Password', validators=[DataRequired(), EqualTo('password')])
+	submit = SubmitField("Sign Up")

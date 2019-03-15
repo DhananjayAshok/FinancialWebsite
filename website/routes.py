@@ -1,5 +1,5 @@
 from flask import render_template, flash, url_for, redirect, request
-from website.forms import RegisterForm, LoginForm, RedeemAccountForm, UsernameForm
+from website.forms import RegisterForm, LoginForm, RedeemAccountForm, UsernameForm, ResetPasswordForm
 from website.models import User, PortfolioShell, StockShell
 from website import app, bcrypt, db, session
 from flask_login import login_user, current_user, logout_user, login_required
@@ -56,11 +56,10 @@ def profile():
 
 @app.route("/forgot_password", methods= ['POST', 'GET'] )
 def forgot_password():
-
 	form = UsernameForm()
 	if form.validate_on_submit():
 		user = User.query.filter_by(username = form.username.data).first()
-		session['redeem_data']= (user.security_question, user.security_answer)
+		session['redeem_data']= (user.security_question, user.security_answer, user.id)
 		return redirect(url_for('redeem_account'))
 	return render_template('forgot_password.html', form = form)
 
@@ -69,10 +68,28 @@ def redeem_account():
 	form = RedeemAccountForm()
 	if form.validate_on_submit():
 		if form.answer.data == session.get('redeem_data', ("Impossible To Accidentally Guess String", ""))[1]:
-			flash('Succesfully Done', 'success')
-			session.pop('redeem_data', None)
-			return redirect(url_for('login'))
+			return redirect(url_for('reset_password'))
 		else:
 			flash("Incorrect Answer. Try again", 'danger')
 	return render_template('redeem_account.html', form = form, question = session.get('redeem_data', ("No Question To Ask You, Hacker!", ""))[0]  )
 
+
+@app.route("/reset_password", methods = ['POST', 'GET'])
+def reset_password():
+	if session.get('redeem_data', None) is None:
+		flash('Verify Credentials First', 'danger')
+		return redirect(url_for('forgot_password'))
+	form = ResetPasswordForm()
+	if form.validate_on_submit():
+		user = User.query.filter_by(id = session.get('redeem_data', [None, None, None])[2]).first()
+		if not user:
+			flash('An unknown error occured. Account is corrupted.', 'danger')
+			return redirect('home')
+		else:
+			hashed_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
+			user.password = hashed_password
+			db.session.commit()
+			session.pop('redeem_data', None)
+			flash(f'Succesfully changed password for {user.username}.', 'success')
+			return redirect('login')
+	return render_template('reset_password.html', form = form)
