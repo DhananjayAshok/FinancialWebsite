@@ -27,3 +27,20 @@ class LoginForm(FlaskForm):
 	password = PasswordField('Password', validators=[DataRequired()])
 	remember = BooleanField('Remember Me')
 	submit = SubmitField("Log In!")	
+
+
+class UsernameForm(FlaskForm):
+	username = StringField('Username', validators = [DataRequired()])
+	submit = SubmitField("Request Question Authorization")
+
+	def validate_username(self, username):
+		user = User.query.filter_by(username = username.data).first()
+		if not user:
+			raise ValidationError("Sorry. You don't seem to have an account.")
+
+
+
+class RedeemAccountForm(FlaskForm):
+	# user = session['user']
+	answer = StringField("Pointless Label")
+	submit = SubmitField('Submit') 

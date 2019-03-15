@@ -13,6 +13,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String, unique=True, nullable=False)
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     password = db.Column(db.String, nullable=False)
+    security_question = db.Column(db.String, nullable = False)
+    security_answer = db.Column(db.String, nullable = False)
     portfolios = db.relationship('PortfolioShell', backref='holder', lazy=True)
 
     def __repr__(self):
