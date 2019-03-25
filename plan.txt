@@ -1,11 +1,11 @@
 Immediate
-
+	Intergrate portfolios
 
 
 
 
 Short Term
-
+	Figure out how the pd.to_csv works online
 
 
 

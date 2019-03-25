@@ -1,8 +1,9 @@
 from flask import render_template, flash, url_for, redirect, request
-from website.forms import RegisterForm, LoginForm, RedeemAccountForm, UsernameForm, ResetPasswordForm
+from website.forms import RegisterForm, LoginForm, RedeemAccountForm, UsernameForm, ResetPasswordForm, CreatePortfolioForm, AddStockForm
 from website.models import User, PortfolioShell, StockShell
 from website import app, bcrypt, db, session
 from flask_login import login_user, current_user, logout_user, login_required
+from website.financial.portfolio import Portfolio
 
 @app.route("/")
 @app.route("/home")
@@ -52,7 +53,9 @@ def logout():
 @app.route("/profile")
 @login_required
 def profile():
-    return render_template('profile.html', title='Profile')
+	#p = Portfolio([("Apple","AAPL","NASDAQ",5)])
+	portfolios = PortfolioShell.query.filter_by(holder = current_user)
+	return render_template('profile.html', title='Profile', portfolios = portfolios)
 
 @app.route("/forgot_password", methods= ['POST', 'GET'] )
 def forgot_password():
@@ -61,7 +64,7 @@ def forgot_password():
 		user = User.query.filter_by(username = form.username.data).first()
 		session['redeem_data']= (user.security_question, user.security_answer, user.id)
 		return redirect(url_for('redeem_account'))
-	return render_template('forgot_password.html', form = form)
+	return render_template('forgot_password.html', title = "Forgot Password", form = form)
 
 @app.route("/redeem_account", methods= ['POST', 'GET'] )
 def redeem_account():
@@ -71,7 +74,7 @@ def redeem_account():
 			return redirect(url_for('reset_password'))
 		else:
 			flash("Incorrect Answer. Try again", 'danger')
-	return render_template('redeem_account.html', form = form, question = session.get('redeem_data', ("No Question To Ask You, Hacker!", ""))[0]  )
+	return render_template('redeem_account.html', form = form, title = "Redeem Account", question = session.get('redeem_data', ("No Question To Ask You, Hacker!", ""))[0]  )
 
 
 @app.route("/reset_password", methods = ['POST', 'GET'])
@@ -92,4 +95,39 @@ def reset_password():
 			session.pop('redeem_data', None)
 			flash(f'Succesfully changed password for {user.username}.', 'success')
 			return redirect('login')
-	return render_template('reset_password.html', form = form)
+	return render_template('reset_password.html', title = "Reset Password", form = form)
+
+
+@login_required
+@app.route("/portfolio/create", methods = ['POST', 'GET'])
+def create_portfolio():
+	form = CreatePortfolioForm()
+	if form.validate_on_submit():
+		portfolio = PortfolioShell(name = form.name.data, capital = form.capital.data, holder = current_user)
+		db.session.add(portfolio)
+		db.session.commit()
+		flash(f'Succesfully created portfolio "{form.name.data}".', 'success')
+		return redirect(url_for('profile'))
+	return render_template('create_portfolio.html', title = "Create Portfolio", form = form)
+
+
+@login_required
+@app.route('/portfolio/<int:portfolio_id>')
+def portfolio(portfolio_id):
+	portfolio = PortfolioShell.query.get_or_404(portfolio_id)
+	stocks = StockShell.query.filter_by(portfolio = portfolio)
+	return render_template('portfolio.html', title = portfolio.name, portfolio = portfolio, stocks = stocks)
+
+
+@login_required
+@app.route("/stock/add/<int:portfolio_id>", methods = ['POST', 'GET'])
+def add_stock(portfolio_id):
+	portfolio = PortfolioShell.query.get_or_404(portfolio_id)
+	form = AddStockForm()
+	if form.validate_on_submit():
+		stock = StockShell(name = form.name.data, ticker = form.ticker.data, exchange = form.exchange.data, n_shares = form.n_shares.data, portfolio = portfolio)
+		db.session.add(stock)
+		db.session.commit()
+		flash(f'Succesfully added Stock "{form.name.data}".', 'success')
+		return redirect(url_for('portfolio', portfolio_id = portfolio.id))
+	return render_template('add_stock.html', title = "Add Stock", form = form)

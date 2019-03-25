@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, IntegerField, FloatField
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
 from website.models import User, PortfolioShell, StockShell
 from website import db
@@ -38,8 +38,6 @@ class UsernameForm(FlaskForm):
 		if not user:
 			raise ValidationError("Sorry. You don't seem to have an account.")
 
-
-
 class RedeemAccountForm(FlaskForm):
 	# user = session['user']
 	answer = StringField("Pointless Label")
@@ -49,3 +47,28 @@ class ResetPasswordForm(FlaskForm):
 	password = PasswordField('New Password', validators=[DataRequired()])
 	confirm_password = PasswordField('Confirm New Password', validators=[DataRequired(), EqualTo('password')])
 	submit = SubmitField("Sign Up")
+
+class CreatePortfolioForm(FlaskForm):
+	name = StringField('Name', validators = [DataRequired()])
+	capital = FloatField("Capital", validators = [DataRequired()])
+	submit = SubmitField("Create")
+
+	def validate_capital(self, capital):
+		if capital.data < 0:
+			raise ValidationError("Error. Cannot have a negative starting capital")	
+
+	def validate_name(self, name):
+		portfolio =  PortfolioShell.query.filter_by(name=name.data).first()
+		if portfolio:
+			raise ValidationError("Sorry. That name is already taken. Please try another")
+
+class AddStockForm(FlaskForm):
+	name = StringField('Name', validators = [DataRequired()])
+	ticker = StringField('Ticker', validators = [DataRequired()])
+	exchange = SelectField('Exchange', choices = [("BSE","Bombay Stock Exchange"), ("NASDAQ","National Association of Securities Dealers Automated Quotations")], validators = [DataRequired()])
+	n_shares = IntegerField("Number of Stocks", validators = [DataRequired()])
+	submit = SubmitField("Add")	
+
+	def validate_n_shares(self, n_shares):
+		if n_shares.data < 0:
+			raise ValidationError("Error. Cannot have a negative quantity of stocks")

@@ -1,4 +1,20 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>{{ current_user.username }}</h1>
+    <h1> Welcome {{ current_user.username }}!</h1>
+    <h1> You currently hold the following portfolios</h1>
+    {% for portfolio in portfolios %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="{{ url_for('portfolio', portfolio_id =portfolio.id) }}">{{ portfolio.name }}</a>
+            </div>
+            <p class="article-content">Capital On Hand: {{ portfolio.capital }}</p>
+          </div>
+        </article>
+    {% endfor %}
+    <div class="border-top pt-3">
+        <small class="text-muted">
+            Need A Portfolio? <a class="ml-2" href="{{ url_for('create_portfolio') }}"> Create a Portfolio! </a>
+        </small>
+    </div>
 {% endblock content %}

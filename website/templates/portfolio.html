@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1> Analyzing {{ portfolio.name }}</h1>
+    <h2> Following Stocks Held </h2>
+    {% for stock in stocks %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2">{{ stock.name }} held on {{ stock.exchange }}</a>
+            </div>
+            <p class="article-content">Shares Held: {{ stock.n_shares }}</p>
+          </div>
+        </article>
+    {% endfor %}
+    <div class="border-top pt-3">
+        <small class="text-muted">
+            Need Some Shares? <a class="ml-2" href="{{ url_for('add_stock', portfolio_id = portfolio.id )}}"> Add a Stock! </a>
+        </small>
+    </div>
+{% endblock content %}
