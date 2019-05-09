@@ -1,20 +1,74 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1> Analyzing {{ portfolio.name }}</h1>
+    <script src="{{ url_for('static', filename='analysisDirector.js') }}"></script>
+    <h1> Analyzing {{ portfolio_shell.name }}</h1>
+    <h2>Overall Value {{ portfolio.get_value() }}</h2>
+    <h3>Asset Value {{ portfolio.get_asset_value() }}</h3>
+    <h3>Capital Value {{ portfolio.capital }}</h3>
     <h2> Following Stocks Held </h2>
-    {% for stock in stocks %}
+    {% for stock in stock_shells %}
         <article class="media content-section">
           <div class="media-body">
             <div class="article-metadata">
               <a class="mr-2">{{ stock.name }} held on {{ stock.exchange }}</a>
             </div>
             <p class="article-content">Shares Held: {{ stock.n_shares }}</p>
+            <p class="article-content">Current Price: {{ portfolio.stocks[stock.name][0].get_current_price() }}</p>
           </div>
         </article>
     {% endfor %}
+    <button type="button">Save and Update Changes</button>
     <div class="border-top pt-3">
         <small class="text-muted">
-            Need Some Shares? <a class="ml-2" href="{{ url_for('add_stock', portfolio_id = portfolio.id )}}"> Add a Stock! </a>
+            Need Some Shares? <a class="ml-2" href="{{ url_for('add_stock', portfolio_id = portfolio_shell.id )}}"> Add a Stock! </a>
         </small>
     </div>
+        <div class="col-md-4">
+            <div class="content-section">
+                    <h3>Analysis Tools</h3>
+                    <p class='text-muted'>
+                      <ul class="list-group">
+                        <li class="list-group-item list-group-item-light">
+                            <a id="computeActions-link" href= "{{ url_for('analysis', portfolio_id = portfolio_shell.id )}}" target="_blank">
+                                <button type="button">Compute Actions</button>
+                            </a> 
+                            <select id="computeActions-methods", onchange="set_computeActions_url();">
+                                <option value="bollingerbands">BollingerBands (TM)</option>
+                                <option value="something">Something Else</option>
+                            </select>
+                        </li>
+                        <li class="list-group-item list-group-item-light">
+                            <a id="simulateAnalysis-link" href= "{{ url_for('analysis', portfolio_id = portfolio_shell.id, command='simulateAnalysis', method='bollingerbands', start_date='2018-01-01' )}}", target="_blank">
+                                <button type="button">Simulate Analysis</button>
+                            </a>
+                            <select id="simulateAnalysis-methods", onchange="set_simulateAnalysis_url();">
+                                <option value="bollingerbands">BollingerBands (TM)</option>
+                                <option value="something">Something Else</option>
+                            </select>
+                            Start Date
+                            <input type="date" id="simulateAnalysis-date" name="date"
+                            value="2018-01-01"
+                            min="2000-01-01 " max="{{ max_date }}", onchange="set_simulateAnalysis_url();">
+                            <select id="simulateAnalysis-frequency", onchange="set_simulateAnalysis_url();">
+                                <option value="7">7</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                            </select>
+                        </li>
+                      </ul>
+                    </p>
+            </div>
+        </div>
+
 {% endblock content %}

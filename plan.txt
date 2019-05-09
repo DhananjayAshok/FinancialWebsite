@@ -1,11 +1,13 @@
 Immediate
-	Intergrate portfolios
-
+	Delete and edit portfolio/ stock option
+	
 
 
 
 Short Term
 	Figure out how the pd.to_csv works online
+	Graphing integration
+	Delete Static Folders once closed or once a day
 
 
 
@@ -18,3 +20,11 @@ Medium Term
 
 
 Long Term
+
+
+
+
+Change Notes
+	Changing stocks to save in static file. 
+		And internal initializer to take from static
+		Saves to name(ticker)

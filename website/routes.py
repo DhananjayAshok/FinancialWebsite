@@ -4,6 +4,7 @@ from website.models import User, PortfolioShell, StockShell
 from website import app, bcrypt, db, session
 from flask_login import login_user, current_user, logout_user, login_required
 from website.financial.portfolio import Portfolio
+from datetime import date
 
 @app.route("/")
 @app.route("/home")
@@ -98,8 +99,9 @@ def reset_password():
 	return render_template('reset_password.html', title = "Reset Password", form = form)
 
 
-@login_required
+
 @app.route("/portfolio/create", methods = ['POST', 'GET'])
+@login_required
 def create_portfolio():
 	form = CreatePortfolioForm()
 	if form.validate_on_submit():
@@ -111,16 +113,25 @@ def create_portfolio():
 	return render_template('create_portfolio.html', title = "Create Portfolio", form = form)
 
 
-@login_required
+
 @app.route('/portfolio/<int:portfolio_id>')
-def portfolio(portfolio_id):
-	portfolio = PortfolioShell.query.get_or_404(portfolio_id)
-	stocks = StockShell.query.filter_by(portfolio = portfolio)
-	return render_template('portfolio.html', title = portfolio.name, portfolio = portfolio, stocks = stocks)
-
-
 @login_required
+def portfolio(portfolio_id):
+	portfolio_shell = PortfolioShell.query.get_or_404(portfolio_id)
+	stock_shells = StockShell.query.filter_by(portfolio = portfolio_shell)
+	# Creating the portfolio object
+	stock_list = []
+	for stock in stock_shells:
+		data = (stock.name, stock.ticker, stock.exchange, stock.n_shares)
+		stock_list.append(data)
+	portfolio = Portfolio(stock_list, portfolio_shell.capital)
+
+	return render_template('portfolio.html', title = portfolio_shell.name, portfolio = portfolio, portfolio_shell = portfolio_shell, stock_shells = stock_shells, max_date=str(date.today()))
+
+
+
 @app.route("/stock/add/<int:portfolio_id>", methods = ['POST', 'GET'])
+@login_required
 def add_stock(portfolio_id):
 	portfolio = PortfolioShell.query.get_or_404(portfolio_id)
 	form = AddStockForm()
@@ -131,3 +142,44 @@ def add_stock(portfolio_id):
 		flash(f'Succesfully added Stock "{form.name.data}".', 'success')
 		return redirect(url_for('portfolio', portfolio_id = portfolio.id))
 	return render_template('add_stock.html', title = "Add Stock", form = form)
+
+
+
+@app.route("/analysis/<int:portfolio_id>")
+@login_required
+def analysis(portfolio_id):
+	portfolio_shell = PortfolioShell.query.get_or_404(portfolio_id)
+	command = request.args.get('command')
+	stock_list = []
+	stock_shells = StockShell.query.filter_by(portfolio= portfolio_shell)
+	for stock in stock_shells:
+		data = (stock.name, stock.ticker, 'INTERNAL', stock.n_shares)
+		stock_list.append(data)
+	portfolio = Portfolio(stock_list, portfolio_shell.capital)
+
+	if command == 'computeActions':
+		method = request.args.get('method')
+		final = portfolio.computeActions(method= method)
+		#portfolio.display_Graph(method=method)
+		return render_template('computeActions.html', method= method, actions=final)
+	elif command == 'simulateAnalysis':
+		method = request.args.get('method')
+		start_date = request.args.get('start_date')
+		temp = start_date.split('-')
+		start_date = tuple([int(value) for value in temp])
+		frequency = request.args.get('frequency')
+		if not frequency:
+			frequency = 7
+		else:
+			frequency = int(frequency)
+		final = portfolio.simulateAnalysis(method=method, start_date=start_date, frequency=frequency)
+		return render_template('computeActions.html', method= method, actions=final)
+	elif command == 'displayGraph':
+		pass
+	return render_template('analysis.html', display = (command, parameters, type(portfolio), final))
+
+
+
+@app.route("/trials/<int:portfolio_id>")
+def trials(portfolio_id):
+	return render_template('trials.html', portfolio_id=portfolio_id)

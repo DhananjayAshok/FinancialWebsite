@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+<script src="{{ url_for('static', filename='analysisDirector.js') }}"></script>
+<article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2">Stock Name held on Stock Exchange</a>
+            </div>
+            <p class="article-content">Shares Held: Number</p>
+            <p class="article-content">Current Price: Price</p>
+          </div>
+        </article>
+
+{% endblock content %}

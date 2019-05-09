@@ -10,6 +10,7 @@ import quandl
 from alpha_vantage.timeseries import TimeSeries
 from datetime import datetime
 from website.financial import utility
+from flask import url_for
 #endregion
 
 
@@ -128,8 +129,10 @@ Privately Will also
 
         dftemp = dftemp.rename(columns = {self.attribute: name})
         self.df = dftemp[[self.name]]
-        self.df.to_csv(f"{self.ticker}.csv", index_label = "Date")
+        #save_location = url_for('static')
+        self.df.to_csv(f"website/static/{self.name}({self.ticker}).csv", index_label = "Date")
         self.start_date, self.end_date = self.analyzeBoundary()
+
     def _initializeBSE(self) -> pd.DataFrame: 
         """
         Returns a pandas dataframe dftemp which needs to be renamed
@@ -162,8 +165,9 @@ Privately Will also
         To be used only when we know that a saved file already exists in local storage with the raw csv in it
         The raw csv to have format
         """
-        df = pd.read_csv(f'{self.ticker}.csv', index_col = 'Date', parse_dates = True)
+        df = pd.read_csv(f'website/static/{self.name}({self.ticker}).csv', index_col = 'Date', parse_dates = True)
         self.df = df
+        
     def __repr__(self):
         return f'Stock Object of :{self.name}'
     def __str__(self):

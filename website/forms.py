@@ -3,6 +3,8 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField, Selec
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
 from website.models import User, PortfolioShell, StockShell
 from website import db
+from website.financial.stock import Stock
+from website.financial import utility
 
 class RegisterForm(FlaskForm):
 	username = StringField('Username', validators = [DataRequired()])
@@ -72,3 +74,14 @@ class AddStockForm(FlaskForm):
 	def validate_n_shares(self, n_shares):
 		if n_shares.data < 0:
 			raise ValidationError("Error. Cannot have a negative quantity of stocks")
+
+	def validate_ticker(self, ticker):
+		try:
+			trial = Stock(self.name.data, self.ticker.data, self.exchange.data)
+		except utility.NotFoundError:
+			raise ValidationError("Error. The Ticker You Entered Is Not From That Exchange. Data Not Found Error.")
+		except utility.OtherImportError:
+			raise ValidationError("Some Import Error Occured")
+
+class AnalysisForm(FlaskForm):
+	pass
