@@ -30,32 +30,37 @@ class Portfolio(object):
         """
         Stock to be in format: (name, ticker, exchange, no:stocks owned)
         Addition
-            If stock (Identified by name) is not in self.stocks then new entry is added
-            If stock is in stock.stocks the number of that stock is incrimented
+           If stock (Identified by name) is not in self.stocks then new entry is added
+           If stock is in stock.stocks the number of that stock is incrimented
         Spending
             If stock is not free and there is enough capital to make the purchase it will occur
             If not enough capital then the biggest possible purchase will be made
         """
+
         if stock[0] not in self.stocks:
             a = Stock(stock[0], stock[1],stock[2])
             self.stocks[str(stock[0])] = [a, 0]
-        
+
         wanted_no = stock[3]
         if free:
             self.stocks[stock[0]][1] += wanted_no
-            return
-        price = self.stocks[stock[0]][0].get_current_price()
-        possible_no = self.capital // price
-        if wanted_no <= possible_no:
-            print("wanted smaller")
-            self.stocks[stock[0]][1] += wanted_no
-            self.capital -= price* wanted_no
         else:
-            if possible_no == 0:
-                self.stocks.pop(str(stock[0]))
+            price = self.stocks[stock[0]][0].get_current_price()
+            possible_no = self.capital // price
+            if wanted_no <= possible_no:
+                #print("wanted smaller")
+                self.stocks[stock[0]][1] += wanted_no
+                self.capital -= price* wanted_no
             else:
-                self.stocks[stock[0]][1] += possible_no
-                self.capital -= price * possible_no
+                if possible_no == 0:
+                    pass
+                    #self.stocks.pop(str(stock[0]))
+                else:
+                    self.stocks[stock[0]][1] += possible_no
+                    self.capital -= price * possible_no
+        if self.stocks[stock[0]][1] == 0:
+            self.stocks.pop(str(stock[0]))
+        return
         
     def sell_stock(self, stock_name: str, amount:int, free = False):
         """

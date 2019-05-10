@@ -142,14 +142,26 @@ def portfolio(portfolio_id):
 @app.route("/stock/add/<int:portfolio_id>", methods = ['POST', 'GET'])
 @login_required
 def add_stock(portfolio_id):
-	portfolio = PortfolioShell.query.get_or_404(portfolio_id)
+	portfolio_shell = PortfolioShell.query.get_or_404(portfolio_id)
 	form = AddStockForm()
 	if form.validate_on_submit():
-		stock = StockShell(name = form.name.data, ticker = form.ticker.data, exchange = form.exchange.data, n_shares = form.n_shares.data, portfolio = portfolio)
-		db.session.add(stock)
-		db.session.commit()
-		flash(f'Succesfully added Stock "{form.name.data}".', 'success')
-		return redirect(url_for('portfolio', portfolio_id = portfolio.id))
+		stock_list = []
+		stock_shells = StockShell.query.filter_by(portfolio= portfolio_shell)
+		for mini_stock in stock_shells:
+			data = (mini_stock.name, mini_stock.ticker, 'INTERNAL', mini_stock.n_shares)
+			stock_list.append(data)
+		portfolio = Portfolio(stock_list, portfolio_shell.capital)
+		stock_data = (form.name.data, form.ticker.data, form.exchange.data, form.n_shares.data)
+		portfolio.buy_stock(stock_data, free= (not form.free.data))
+		if portfolio.stocks.get(form.name.data, None) is None:
+			flash(f"Not Enough Money To Make This Purchase!. You have only {portfolio.capital}", "danger")
+		else:
+			portfolio_shell.capital = portfolio.capital
+			stock = StockShell(name = form.name.data, ticker = form.ticker.data, exchange = form.exchange.data, n_shares = portfolio.stocks.get(form.name.data)[1], portfolio = portfolio_shell)
+			db.session.add(stock)
+			db.session.commit()
+			flash(f'Succesfully added Stock "{form.name.data}".', 'success')
+			return redirect(url_for('portfolio', portfolio_id = portfolio_shell.id))
 	return render_template('add_stock.html', title = "Add Stock", form = form)
 
 
@@ -234,7 +246,10 @@ def stock_change(portfolio_id):
 	else:
 		portfolio.sell_stock(stock.name, n, free)
 
-	stock.n_shares = portfolio.stocks[stock.name][1]
+	if portfolio.stocks.get(stock.name, None) is None:
+		db.session.delete(stock)
+	else:	
+		stock.n_shares = portfolio.stocks[stock.name][1]
 	portfolio_shell.capital = portfolio.capital
 	db.session.commit()
 	flash(f'Transaction Completed Succesfully', 'success')

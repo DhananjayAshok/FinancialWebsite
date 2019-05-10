@@ -69,11 +69,12 @@ class AddStockForm(FlaskForm):
 	ticker = StringField('Ticker', validators = [DataRequired()])
 	exchange = SelectField('Exchange', choices = [("BSE","Bombay Stock Exchange"), ("NASDAQ","National Association of Securities Dealers Automated Quotations")], validators = [DataRequired()])
 	n_shares = IntegerField("Number of Stocks", validators = [DataRequired()])
+	free = BooleanField("Paying From Portfolio Capital?")
 	submit = SubmitField("Add")	
 
 	def validate_n_shares(self, n_shares):
-		if n_shares.data < 0:
-			raise ValidationError("Error. Cannot have a negative quantity of stocks")
+		if n_shares.data <= 0:
+			raise ValidationError("Error. Cannot have a non positive quantity of stocks")
 
 	def validate_ticker(self, ticker):
 		try:
@@ -82,6 +83,3 @@ class AddStockForm(FlaskForm):
 			raise ValidationError("Error. The Ticker You Entered Is Not From That Exchange. Data Not Found Error.")
 		except utility.OtherImportError:
 			raise ValidationError("Some Import Error Occured")
-
-class AnalysisForm(FlaskForm):
-	pass
