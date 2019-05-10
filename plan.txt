@@ -1,6 +1,7 @@
 Immediate
 	Get Graphs working
-	Optimize Addition
+	Figure out how to clear static once a day
+		And if ur url manual entering stuff on stock internal loading works
 	
 	
 

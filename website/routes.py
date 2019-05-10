@@ -5,6 +5,7 @@ from website import app, bcrypt, db, session
 from flask_login import login_user, current_user, logout_user, login_required
 from website.financial.portfolio import Portfolio
 from datetime import date
+from pathlib import Path
 
 @app.route("/")
 @app.route("/home")
@@ -37,7 +38,7 @@ def login():
 		if user and bcrypt.check_password_hash(user.password, form.password.data):
 			login_user(user, remember=form.remember.data)
 			next_page = request.args.get('next')
-			flash(f'Welcome Back {user.username}')
+			flash(f'Welcome Back {user.username}', "success")
 			return redirect(next_page) if next_page else redirect(url_for('home'))
 		else:
 			flash('Login Unsuccessful. Please check username and password', 'danger')
@@ -122,7 +123,15 @@ def portfolio(portfolio_id):
 	# Creating the portfolio object
 	stock_list = []
 	for stock in stock_shells:
-		data = (stock.name, stock.ticker, stock.exchange, stock.n_shares)
+		"""
+		Check if stock is already saved as a csv. If yes then make exchange internal otherwise download.
+		"""
+		data = (0,)
+		path = Path(f"website/static/{stock.name}({stock.ticker}).csv")
+		if path.is_file():
+			data = (stock.name, stock.ticker, "INTERNAL", stock.n_shares)
+		else:
+			data = (stock.name, stock.ticker, stock.exchange, stock.n_shares)
 		stock_list.append(data)
 	portfolio = Portfolio(stock_list, portfolio_shell.capital)
 
