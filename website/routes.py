@@ -65,6 +65,9 @@ def edit_portfolio(portfolio_id):
 	command = request.args.get('command')
 	portfolio = PortfolioShell.query.get_or_404(portfolio_id)
 	if command == "delete":
+		stocks = StockShell.query.filter_by(portfolio=portfolio)
+		for stock in stocks:
+			db.session.delete(stock)
 		db.session.delete(portfolio)
 		db.session.commit()
 		flash(f"Deleted Portfolio {portfolio.name}", "success")
@@ -277,7 +280,8 @@ def analysis(portfolio_id):
 		return render_template('computeActions.html', method= method, actions=final)
 	elif command == 'displayGraph':
 		pass
-	return render_template('analysis.html', display = (command, parameters, type(portfolio), final))
+	flash("Invalid Command. (Wait for page to load before selecting)", "danger")
+	return render_template('computeActions.html', method= "Invalid Method", actions={})
 
 
 

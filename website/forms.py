@@ -65,7 +65,7 @@ class CreatePortfolioForm(FlaskForm):
 			raise ValidationError("Sorry. That name is already taken. Please try another")
 
 class AddStockForm(FlaskForm):
-	name = StringField('Name', validators = [DataRequired()])
+	name = StringField('Name (Every Stock in a Portfolio Must Have a Unique Name or Errors Will Occur)', validators = [DataRequired()])
 	ticker = StringField('Ticker', validators = [DataRequired()])
 	exchange = SelectField('Exchange', choices = [("BSE","Bombay Stock Exchange"), ("NASDAQ","National Association of Securities Dealers Automated Quotations")], validators = [DataRequired()])
 	n_shares = IntegerField("Number of Stocks", validators = [DataRequired()])
