@@ -1,5 +1,15 @@
 {% extends "layout.html" %}
 {% block content %}
+    <script>
+        function url_mutation(id){
+            var value = document.getElementById('capital('+id+')').value;
+            var url = document.getElementById('capital('+id+')').dataset.path+"&capital="+value;
+            document.getElementById('change('+id+')').href= url;
+        } 
+        
+
+    </script>
+
     <h1> Welcome {{ current_user.username }}!</h1>
     You currently hold the following portfolios
     {% for portfolio in portfolios %}
@@ -9,6 +19,15 @@
               <a class="mr-2" href="{{ url_for('portfolio', portfolio_id =portfolio.id) }}">{{ portfolio.name }}</a>
             </div>
             <p class="article-content">Capital On Hand: {{ portfolio.capital }}</p>
+            Set New Capital Amount: <input type="number", id="capital({{ portfolio.id }})", data-path="{{ url_for('edit_portfolio', portfolio_id=portfolio.id, command='change_capital')}}", onchange="url_mutation('{{ portfolio.id }}');"> 
+            <a href="{{ url_for('edit_portfolio', portfolio_id=portfolio.id, command='change_capital', capital=portfolio.capital) }}", id= "change({{ portfolio.id }})">
+                <button>Change</button>
+            </a>
+            <br>
+            <br>
+            <a href="{{ url_for('edit_portfolio', portfolio_id=portfolio.id, command='delete') }}">
+                <button>Delete Portfolio</button>
+            </a>
           </div>
         </article>
     {% endfor %}

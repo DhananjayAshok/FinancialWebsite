@@ -59,6 +59,32 @@ def profile():
 	portfolios = PortfolioShell.query.filter_by(holder = current_user)
 	return render_template('profile.html', title='Profile', portfolios = portfolios)
 
+@app.route("/edit_portfolio/<int:portfolio_id>")
+@login_required
+def edit_portfolio(portfolio_id):
+	command = request.args.get('command')
+	portfolio = PortfolioShell.query.get_or_404(portfolio_id)
+	if command == "delete":
+		db.session.delete(portfolio)
+		db.session.commit()
+		flash(f"Deleted Portfolio {portfolio.name}", "success")
+	elif command == "change_capital":
+		new_capital = request.args.get('capital')
+		try:
+			new_capital = int(new_capital)
+		except:
+			flash('Illegal URL Entry', "danger")
+		else:
+			if new_capital < 0:
+				flash('You cannot have a negative capital', "danger")
+			else:
+				portfolio.capital=new_capital
+				db.session.commit()
+				flash(f"Changed Capital for {portfolio.name} to {portfolio.capital}", "success")
+	else:
+		flash('Illegal URL Entry', "danger")
+	return redirect(url_for('profile'))
+
 @app.route("/forgot_password", methods= ['POST', 'GET'] )
 def forgot_password():
 	form = UsernameForm()
@@ -164,41 +190,6 @@ def add_stock(portfolio_id):
 			return redirect(url_for('portfolio', portfolio_id = portfolio_shell.id))
 	return render_template('add_stock.html', title = "Add Stock", form = form)
 
-
-
-@app.route("/analysis/<int:portfolio_id>")
-def analysis(portfolio_id):
-	portfolio_shell = PortfolioShell.query.get_or_404(portfolio_id)
-	command = request.args.get('command')
-	stock_list = []
-	stock_shells = StockShell.query.filter_by(portfolio= portfolio_shell)
-	for stock in stock_shells:
-		data = (stock.name, stock.ticker, 'INTERNAL', stock.n_shares)
-		stock_list.append(data)
-	portfolio = Portfolio(stock_list, portfolio_shell.capital)
-
-	if command == 'computeActions':
-		method = request.args.get('method')
-		final = portfolio.computeActions(method= method)
-		#portfolio.display_Graph(method=method)
-		return render_template('computeActions.html', method= method, actions=final)
-	elif command == 'simulateAnalysis':
-		method = request.args.get('method')
-		start_date = request.args.get('start_date')
-		temp = start_date.split('-')
-		start_date = tuple([int(value) for value in temp])
-		frequency = request.args.get('frequency')
-		if not frequency:
-			frequency = 7
-		else:
-			frequency = int(frequency)
-		final = portfolio.simulateAnalysis(method=method, start_date=start_date, frequency=frequency)
-		return render_template('computeActions.html', method= method, actions=final)
-	elif command == 'displayGraph':
-		pass
-	return render_template('analysis.html', display = (command, parameters, type(portfolio), final))
-
-
 @app.route("/stock/change/<int:portfolio_id>")
 @login_required
 def stock_change(portfolio_id):
@@ -254,6 +245,42 @@ def stock_change(portfolio_id):
 	db.session.commit()
 	flash(f'Transaction Completed Succesfully', 'success')
 	return redirect(url_for('portfolio',portfolio_id=portfolio_shell.id))
+
+
+@app.route("/analysis/<int:portfolio_id>")
+def analysis(portfolio_id):
+	portfolio_shell = PortfolioShell.query.get_or_404(portfolio_id)
+	command = request.args.get('command')
+	stock_list = []
+	stock_shells = StockShell.query.filter_by(portfolio= portfolio_shell)
+	for stock in stock_shells:
+		data = (stock.name, stock.ticker, 'INTERNAL', stock.n_shares)
+		stock_list.append(data)
+	portfolio = Portfolio(stock_list, portfolio_shell.capital)
+
+	if command == 'computeActions':
+		method = request.args.get('method')
+		final = portfolio.computeActions(method= method)
+		#portfolio.display_Graph(method=method)
+		return render_template('computeActions.html', method= method, actions=final)
+	elif command == 'simulateAnalysis':
+		method = request.args.get('method')
+		start_date = request.args.get('start_date')
+		temp = start_date.split('-')
+		start_date = tuple([int(value) for value in temp])
+		frequency = request.args.get('frequency')
+		if not frequency:
+			frequency = 7
+		else:
+			frequency = int(frequency)
+		final = portfolio.simulateAnalysis(method=method, start_date=start_date, frequency=frequency)
+		return render_template('computeActions.html', method= method, actions=final)
+	elif command == 'displayGraph':
+		pass
+	return render_template('analysis.html', display = (command, parameters, type(portfolio), final))
+
+
+
 
 
 
