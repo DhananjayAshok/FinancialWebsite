@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
     <h1> Welcome {{ current_user.username }}!</h1>
-    <h1> You currently hold the following portfolios</h1>
+    You currently hold the following portfolios
     {% for portfolio in portfolios %}
         <article class="media content-section">
           <div class="media-body">

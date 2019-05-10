@@ -146,7 +146,6 @@ def add_stock(portfolio_id):
 
 
 @app.route("/analysis/<int:portfolio_id>")
-@login_required
 def analysis(portfolio_id):
 	portfolio_shell = PortfolioShell.query.get_or_404(portfolio_id)
 	command = request.args.get('command')
@@ -177,6 +176,61 @@ def analysis(portfolio_id):
 	elif command == 'displayGraph':
 		pass
 	return render_template('analysis.html', display = (command, parameters, type(portfolio), final))
+
+
+@app.route("/stock/change/<int:portfolio_id>")
+@login_required
+def stock_change(portfolio_id):
+	args = {}
+	portfolio_shell = PortfolioShell.query.get_or_404(portfolio_id)
+	try:
+		command = request.args.get('command')
+	except:
+		args['command'] = "Invalid Command"
+	free = request.args.get('free') 
+	if free == "True":
+		free = True
+	elif free == "False":
+		free = False
+	else:
+		args['free']= "Variable Free Was Not a Boolean."	
+		
+	try:
+		n = int(request.args.get('n'))
+	except:
+		args['n']= "Variable number was not an integer"
+	try: 
+		stock_id = int(request.args.get('stock_id'))
+	except:
+		args['stock_id']="Stock ID did not exist"
+
+	if len(args.keys()) != 0:
+		flash(f"Something was wrong with the input. Check Error Dictionary:\n {args}", "danger")
+		return redirect(url_for('portfolio',portfolio_id=portfolio_shell.id))
+
+
+	stock = StockShell.query.get(stock_id)
+	stock_list = []
+	stock_shells = StockShell.query.filter_by(portfolio= portfolio_shell)
+	for mini_stock in stock_shells:
+		data = (mini_stock.name, mini_stock.ticker, 'INTERNAL', mini_stock.n_shares)
+		stock_list.append(data)
+	portfolio = Portfolio(stock_list, portfolio_shell.capital)
+
+
+	if command == "buy":
+		pass_in = (stock.name, stock.ticker, stock.exchange, n)
+		portfolio.buy_stock(pass_in, free)
+
+	else:
+		portfolio.sell_stock(stock.name, n, free)
+
+	stock.n_shares = portfolio.stocks[stock.name][1]
+	portfolio_shell.capital = portfolio.capital
+	db.session.commit()
+	flash(f'Transaction Completed Succesfully', 'success')
+	return redirect(url_for('portfolio',portfolio_id=portfolio_shell.id))
+
 
 
 

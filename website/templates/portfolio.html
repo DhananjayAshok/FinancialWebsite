@@ -2,10 +2,11 @@
 {% block content %}
     <script src="{{ url_for('static', filename='analysisDirector.js') }}"></script>
     <h1> Analyzing {{ portfolio_shell.name }}</h1>
-    <h2>Overall Value {{ portfolio.get_value() }}</h2>
-    <h3>Asset Value {{ portfolio.get_asset_value() }}</h3>
-    <h3>Capital Value {{ portfolio.capital }}</h3>
+    <u>Overall Value:</u> {{ portfolio.get_value() }}<br>
+    <u>Asset Value:</u> {{ portfolio.get_asset_value() }}<br>
+    <u>Capital Value:</u> {{ portfolio.capital }}
     <h2> Following Stocks Held </h2>
+    <a href="{{ url_for('stock_change', portfolio_id=portfolio_shell.id) }}", id= "stock_change_base-link"></a>
     {% for stock in stock_shells %}
         <article class="media content-section">
           <div class="media-body">
@@ -14,10 +15,24 @@
             </div>
             <p class="article-content">Shares Held: {{ stock.n_shares }}</p>
             <p class="article-content">Current Price: {{ portfolio.stocks[stock.name][0].get_current_price() }}</p>
+            Buy Stock: <input type="number", id="buy_stock-n({{ stock.id }})", onchange="set_stock_buy_url('{{ stock.id }}');">
+            <a href="{{ url_for('stock_change', portfolio_id= portfolio_shell.id, stock_id= stock.id, command='buy',n=0,free='False' )}}", id="buy_stock-link({{ stock.id }})">
+                <button id="buy">Buy</button>
+            </a>
+            <a href="{{ url_for('stock_change', portfolio_id= portfolio_shell.id, stock_id= stock.id, command='buy',n=0,free='True' )}}",  id="add_stock-link({{ stock.id }})">
+                <button id="add">Add</button>
+            </a>
+            <br><br>
+            Sell Stock: <input type="number", id="sell_stock-n({{ stock.id }})", onchange="set_stock_sell_url('{{ stock.id }}');">
+            <a href="{{ url_for('stock_change', portfolio_id=portfolio_shell.id, stock_id= stock.id, command='sell', n=0, free='False')}}", id="sell_stock-link({{ stock.id }})">
+                <button id="sell">Sell</button>
+            </a>
+            <a href="{{ url_for('stock_change', portfolio_id=portfolio_shell.id, stock_id=stock.id, command='sell', n=0, free='True')}}", id="remove_stock-link({{ stock.id }})">
+                <button id="remove">Remove</button>
+            </a>
           </div>
         </article>
     {% endfor %}
-    <button type="button">Save and Update Changes</button>
     <div class="border-top pt-3">
         <small class="text-muted">
             Need Some Shares? <a class="ml-2" href="{{ url_for('add_stock', portfolio_id = portfolio_shell.id )}}"> Add a Stock! </a>

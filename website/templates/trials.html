@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-<script src="{{ url_for('static', filename='analysisDirector.js') }}"></script>
+<script src="{{ url_for('static', filename='trials.js') }}"></script>
 <article class="media content-section">
           <div class="media-body">
             <div class="article-metadata">
@@ -8,7 +8,23 @@
             </div>
             <p class="article-content">Shares Held: Number</p>
             <p class="article-content">Current Price: Price</p>
+            Buy Stock: <input type="integer", id="buy_stock">
+            <a href="{{ url_for('trials', portfolio_id=2)}}">
+            	<button id="buy">Buy</button>
+            </a>
+            <a href="{{ url_for('trials', portfolio_id=3)}}">
+            	<button id="add">Add</button>
+            </a>
+            <br><br>
+            Sell Stock: <input type="integer", id="sell_stock">
+            <a href="{{ url_for('trials', portfolio_id=4)}}">
+            	<button id="sell">Sell</button>
+            </a>
+            <a href="{{ url_for('trials', portfolio_id=5)}}">
+            	<button id="remove">Remove</button>
+            </a>
           </div>
-        </article>
+</article>
+<button id="{{ url_for('trials', portfolio_id=6) }}", onclick="display(this.id);">Display It</button>
 
 {% endblock content %}
