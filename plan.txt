@@ -1,6 +1,5 @@
 Immediate
 
-	Get Graphs working
 	Figure out how to clear static once a day
 		And if ur url manual entering stuff on stock internal loading works
 	Enforce name collision restrictions within portfolio	
@@ -10,7 +9,6 @@ Immediate
 
 Short Term
 	Figure out how the pd.to_csv works online
-	Graphing integration
 	Delete Static Folders once closed or once a day
 
 
