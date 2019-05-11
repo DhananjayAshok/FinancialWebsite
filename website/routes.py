@@ -4,8 +4,11 @@ from website.models import User, PortfolioShell, StockShell
 from website import app, bcrypt, db, session
 from flask_login import login_user, current_user, logout_user, login_required
 from website.financial.portfolio import Portfolio
+from website.financial.stock import Stock
 from datetime import date
 from pathlib import Path
+import matplotlib.pyplot as plt
+import mpld3
 
 @app.route("/")
 @app.route("/home")
@@ -264,8 +267,10 @@ def analysis(portfolio_id):
 	if command == 'computeActions':
 		method = request.args.get('method')
 		final = portfolio.computeActions(method= method)
-		#portfolio.display_Graph(method=method)
-		return render_template('computeActions.html', method= method, actions=final)
+		#figs = portfolio.create_Graph(method=method)
+		#for name in figs:
+		#	mpld3.show(figs[name])
+		return render_template('computeActions.html', method= method, actions=final, portfolio_id=portfolio_id)
 	elif command == 'simulateAnalysis':
 		method = request.args.get('method')
 		start_date = request.args.get('start_date')
@@ -277,13 +282,29 @@ def analysis(portfolio_id):
 		else:
 			frequency = int(frequency)
 		final = portfolio.simulateAnalysis(method=method, start_date=start_date, frequency=frequency)
-		return render_template('computeActions.html', method= method, actions=final)
+		return render_template('simulateAnalysis.html', method= method, actions=final)
 	elif command == 'displayGraph':
 		pass
 	flash("Invalid Command. (Wait for page to load before selecting)", "danger")
 	return render_template('computeActions.html', method= "Invalid Method", actions={})
 
 
+@app.route("/graph/<int:portfolio_id>")
+def graph(portfolio_id):
+	portfolio_shell = PortfolioShell.query.get_or_404(portfolio_id)
+	stock_shells = StockShell.query.filter_by(portfolio=portfolio_shell)
+	name = request.args.get('name')
+	method = request.args.get('method')
+	stock = stock_shells[0]
+	for candidate in stock_shells:
+		if candidate.name == name:
+			stock = candidate
+			break
+	a = Stock(stock.name, stock.ticker, "INTERNAL")
+	fig = a.create_Graph(method, a.implimentAnalysis(method))
+	data = mpld3.fig_to_html(fig)
+	plt.close()
+	return data
 
 
 
@@ -291,4 +312,7 @@ def analysis(portfolio_id):
 
 @app.route("/trials/<int:portfolio_id>")
 def trials(portfolio_id):
-	return render_template('trials.html', portfolio_id=portfolio_id)
+	fig, ax = plt.subplots()
+	item = mpld3.fig_to_html(fig)
+	#return item
+	return render_template('trials.html', portfolio_id=portfolio_id, item=item, fig=fig, mpld3=mpld3)

@@ -114,7 +114,7 @@ class Portfolio(object):
         final = {}
         for name in self.stocks:
             self.stocks[name][0].implimentAnalysis(method)
-            final[name + " on " + utility.represent_date(self.stocks[name][0].end_date)] = self.stocks[name][0].strategy
+            final[name] = self.stocks[name][0].strategy
         return final
     
     def simulateAnalysis(self, method: str, start_date, frequency = 7)  -> Dict:
@@ -133,10 +133,13 @@ class Portfolio(object):
 
         return final
 
-    def display_Graph(self, method: str):
+    def create_Graph(self, method: str):
+        final = {}
         for name in self.stocks:
             info = self.stocks[name][0].implimentAnalysis(method)
-            self.stocks[name][0].create_Graph(method,info)
+            final[name] = self.stocks[name][0].create_Graph(method,info)
+        return final
+    
     #endregion
 
     # Portfolio Specific Functions

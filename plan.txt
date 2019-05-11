@@ -32,6 +32,7 @@ Change Notes
 	Changing stocks to save in static file. 
 		And internal initializer to take from static
 		Saves to name(ticker)
+	Changing compute action return dict keys to just the name vs mentioning date
 
 Notes
 	Yo its fucked if stocks with different tickers are given the same name within a portfolio

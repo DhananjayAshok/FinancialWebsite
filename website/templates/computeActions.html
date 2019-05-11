@@ -4,6 +4,11 @@
 <h1> {{ method }} Analysis</h1>
 {% for stock in actions %}
 	{{stock}}||{{ actions[stock] }}<br>
+	<a href="{{ url_for('graph', portfolio_id=portfolio_id, method=method, name=stock) }}", target="_blank">
+		<button> Display Graph </button>
+	</a>
+	<br><br><br>
+
 {% endfor %}
 
 {% endblock content %}

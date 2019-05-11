@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1> {{ method }} Simulation</h1>
+{% for stock in actions %}
+	{{stock}}||{{ actions[stock] }}<br>
+{% endfor %}
+
+{% endblock content %}
