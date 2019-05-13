@@ -3,12 +3,13 @@
 
 <script type="text/javascript">
     
-    function initialize(){
-        document.getElementById('graph').innerHTML = "{{ mpld3.fig_to_html(fig) }}"
-    }
-
-
-    document.addEventListener('DOMContentLoaded', initialize);
+    request = new XMLHttpRequest();
+    //request.open('GET', '/graph/8?name=Reliance Industries Lmtd&method=bollingerbands');
+    request.open('GET', '/login')
+    request.onload = () => {
+    	response = request.responseText;
+    	document.getElementById('graph').innerHTML = response
+    };
 
 
 

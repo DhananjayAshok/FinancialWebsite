@@ -289,7 +289,7 @@ def analysis(portfolio_id):
 	return render_template('computeActions.html', method= "Invalid Method", actions={})
 
 
-@app.route("/graph/<int:portfolio_id>")
+@app.route("/graph/<int:portfolio_id>", methods=['GET'])
 def graph(portfolio_id):
 	portfolio_shell = PortfolioShell.query.get_or_404(portfolio_id)
 	stock_shells = StockShell.query.filter_by(portfolio=portfolio_shell)
