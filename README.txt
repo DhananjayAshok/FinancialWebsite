@@ -7,6 +7,6 @@ Requirments -
 
 Steps-
 	1. First unzip the files into a folder
-	2. Then in the folder open a terminal and run-( pip install -r "requirments.txt")
-	3. The basic requirments have been downloaded. Now to start the server just run (python run.py)
+	2. Then in the folder open a terminal and run-( pip install -r "requirements.txt")
+	3. The basic requirements have been downloaded. Now to start the server just run (python run.py)
 	4. When it says server is running navigate to the url that it displays
