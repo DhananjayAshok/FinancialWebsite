@@ -13,7 +13,6 @@ import mpld3
 @app.route("/")
 @app.route("/home")
 def home():
-	flash(f"Just so you know the url {url_for('static', filename='main.css')}")
 	return render_template('home.html')
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -162,9 +161,11 @@ def portfolio(portfolio_id):
 		Check if stock is already saved as a csv. If yes then make exchange internal otherwise download.
 		"""
 		data = (0,)
-		path = Path(f"website/static/{stock.name}({stock.ticker}).csv")
+		#path = Path(f"website/static/{stock.name}({stock.ticker}).csv")
+		path = Path(url_for('static', filename= f"{stock.name}({stock.ticker}).csv"))
 		if path.is_file():
 			data = (stock.name, stock.ticker, "INTERNAL", stock.n_shares)
+			flash(f"Stock {stock.name} has been found in the internal directories and has been loaded faster", "success")
 		else:
 			data = (stock.name, stock.ticker, stock.exchange, stock.n_shares)
 		stock_list.append(data)
