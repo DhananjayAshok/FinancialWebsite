@@ -67,6 +67,9 @@ def profile():
 def edit_portfolio(portfolio_id):
 	command = request.args.get('command')
 	portfolio = PortfolioShell.query.get_or_404(portfolio_id)
+	if current_user != portfolio.holder:
+		flash("That Portfolio Does Not Belong To You. You Can Not Make Edits To It.", "danger")
+		return redirect(url_for('profile'))
 	if command == "delete":
 		stocks = StockShell.query.filter_by(portfolio=portfolio)
 		for stock in stocks:
@@ -175,6 +178,9 @@ def portfolio(portfolio_id):
 @login_required
 def add_stock(portfolio_id):
 	portfolio_shell = PortfolioShell.query.get_or_404(portfolio_id)
+	if current_user != portfolio_shell.holder:
+		flash("That Portfolio Does Not Belong To You. You Can Not Make Edits To It.", "danger")
+		return redirect(url_for('portfolio', portfolio_id=portfolio_id))
 	form = AddStockForm()
 	if form.validate_on_submit():
 		stock_list = []
@@ -199,6 +205,9 @@ def add_stock(portfolio_id):
 @app.route("/stock/change/<int:portfolio_id>")
 @login_required
 def stock_change(portfolio_id):
+	if current_user != PortfolioShell.query.get_or_404(portfolio_id).holder:
+		flash("That Portfolio Does Not Belong To You. You Can Not Make Edits To It.", "danger")
+		return redirect(url_for('portfolio', portfolio_id=portfolio_id))
 	args = {}
 	portfolio_shell = PortfolioShell.query.get_or_404(portfolio_id)
 	try:
@@ -311,8 +320,13 @@ def graph(portfolio_id):
 
 
 @app.route("/trials/<int:portfolio_id>")
+@login_required
 def trials(portfolio_id):
-	fig, ax = plt.subplots()
-	item = mpld3.fig_to_html(fig)
-	#return item
-	return render_template('trials.html', portfolio_id=portfolio_id, item=item, fig=fig, mpld3=mpld3)
+	if current_user != PortfolioShell.query.get_or_404(portfolio_id).holder:
+		flash("That Portfolio Does Not Belong To You", "danger")
+		return redirect(url_for('home'))
+	flash(current_user)
+	a = PortfolioShell.query.get_or_404(portfolio_id)
+	flash(a)
+	flash(a.holder)
+	return render_template('trials.html', portfolio_id=portfolio_id)

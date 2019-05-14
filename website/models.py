@@ -11,14 +11,13 @@ def load_user(user_id):
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
-    image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     password = db.Column(db.String, nullable=False)
     security_question = db.Column(db.String, nullable = False)
     security_answer = db.Column(db.String, nullable = False)
     portfolios = db.relationship('PortfolioShell', backref='holder', lazy=True)
 
     def __repr__(self):
-        return f"User('{self.username}', '{self.image_file}')"
+        return f"User('{self.username}')"
 
 class PortfolioShell(db.Model):
 	id = db.Column(db.Integer, primary_key=True)

@@ -1,21 +1,4 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<script type="text/javascript">
-    
-    request = new XMLHttpRequest();
-    //request.open('GET', '/graph/8?name=Reliance Industries Lmtd&method=bollingerbands');
-    request.open('GET', '/login')
-    request.onload = () => {
-    	response = request.responseText;
-    	document.getElementById('graph').innerHTML = response
-    };
-
-
-
-
-</script>
-<p id="graph", data-color="{{ item }}">
-    I say
-</p>
 {% endblock content %}
