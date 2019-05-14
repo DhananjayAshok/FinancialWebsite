@@ -9,7 +9,7 @@ import os
 
 
 app = Flask(__name__)
-SECRET_KEY = os.urandom(32)
+SECRET_KEY = b"\x10\xfd\xb2\xca:\xe7\x1d\xdd\x19\xf7\xf2h\xf4\x99>\xaf\xf5Y\xfc\x18'\x91z\xc2\xd9~$n\x94\xf3\x9a\xb9"
 #engine = create_engine('postgres://rulsyzlidrkofp:4492814d38bcfc278e6f25bfcc7fe43f15671737cb0d6477db5ccef9d5ad57b1@ec2-54-163-226-238.compute-1.amazonaws.com:5432/dblp20cuc3ltv1')
 app.config['SECRET_KEY'] = SECRET_KEY
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'

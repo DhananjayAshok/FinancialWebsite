@@ -13,6 +13,7 @@ import mpld3
 @app.route("/")
 @app.route("/home")
 def home():
+	flash(f"Current user is {current_user}")
 	return render_template('home.html')
 
 @app.route("/register", methods=['GET', 'POST'])
