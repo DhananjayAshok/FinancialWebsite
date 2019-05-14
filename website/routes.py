@@ -167,6 +167,7 @@ def portfolio(portfolio_id):
 			data = (stock.name, stock.ticker, "INTERNAL", stock.n_shares)
 			flash(f"Stock {stock.name} has been found in the internal directories and has been loaded faster", "success")
 		else:
+			flash(f"Stock {stock.name} was loaded from online rather than internal directories", "danger")
 			data = (stock.name, stock.ticker, stock.exchange, stock.n_shares)
 		stock_list.append(data)
 	portfolio = Portfolio(stock_list, portfolio_shell.capital)
