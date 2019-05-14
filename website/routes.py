@@ -13,7 +13,7 @@ import mpld3
 @app.route("/")
 @app.route("/home")
 def home():
-	flash(f"Just so you know the url {url_for('static', filename=main.css)}")
+	flash(f"Just so you know the url {url_for('static', filename='main.css')}")
 	return render_template('home.html')
 
 @app.route("/register", methods=['GET', 'POST'])
