@@ -3,7 +3,7 @@ Immediate
 	Figure out how to clear static once a day
 		And if ur url manual entering stuff on stock internal loading works
 	Enforce name collision restrictions within portfolio	
-	Deploy
+	Deploy 1
 
 
 
