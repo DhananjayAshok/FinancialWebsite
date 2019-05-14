@@ -13,15 +13,13 @@ import mpld3
 @app.route("/")
 @app.route("/home")
 def home():
-	flash(f"Current user is {current_user}")
+	flash(f"Just so you know the url {url_for('static', filename=main.css)}")
 	return render_template('home.html')
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
 	if current_user.is_authenticated:
-		flash("Was already is_authenticated")
 		return redirect(url_for('home'))
-	flash("Was not already is_authenticated")
 	form = RegisterForm()
 	if form.validate_on_submit():
 		hashed_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
@@ -36,9 +34,7 @@ def register():
 @app.route("/login", methods= ['POST', 'GET'] )
 def login():
 	if current_user.is_authenticated:
-		flash("Was already is_authenticated")
 		return redirect(url_for('home'))
-	flash(f"Was not already is_authenticated. current_user {current_user}")
 	form = LoginForm()
 	if form.validate_on_submit():
 		user = User.query.filter_by(username=form.username.data).first()
@@ -63,14 +59,12 @@ def logout():
 @login_required
 def profile():
 	#p = Portfolio([("Apple","AAPL","NASDAQ",5)])
-	flash(f"Profile checkpoint user is {current_user}")
 	portfolios = PortfolioShell.query.filter_by(holder = current_user)
 	return render_template('profile.html', title='Profile', portfolios = portfolios)
 
 @app.route("/edit_portfolio/<int:portfolio_id>")
 @login_required
 def edit_portfolio(portfolio_id):
-	flash(f"edit_portfolio checkpoint user is {current_user}")
 	command = request.args.get('command')
 	portfolio = PortfolioShell.query.get_or_404(portfolio_id)
 	if current_user != portfolio.holder:
@@ -159,7 +153,6 @@ def create_portfolio():
 @app.route('/portfolio/<int:portfolio_id>')
 @login_required
 def portfolio(portfolio_id):
-	flash(f"Portfolio checkpoint user is {current_user}")
 	portfolio_shell = PortfolioShell.query.get_or_404(portfolio_id)
 	stock_shells = StockShell.query.filter_by(portfolio = portfolio_shell)
 	# Creating the portfolio object

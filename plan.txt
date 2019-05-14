@@ -1,9 +1,8 @@
 Immediate
 
-	Figure out how to clear static once a day
+	Figure out how to clear static once a day -> You really need to do this
 		And if ur url manual entering stuff on stock internal loading works
-	Enforce name collision restrictions within portfolio	
-	Deploy 1
+	To see static. 181.54 FB price
 
 
 
