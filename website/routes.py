@@ -1,7 +1,7 @@
 from flask import render_template, flash, url_for, redirect, request
 from website.forms import RegisterForm, LoginForm, RedeemAccountForm, UsernameForm, ResetPasswordForm, CreatePortfolioForm, AddStockForm
 from website.models import User, PortfolioShell, StockShell
-from website import app, bcrypt, db, session
+from website import app, bcrypt, db, session, cache
 from flask_login import login_user, current_user, logout_user, login_required
 from website.financial.portfolio import Portfolio
 from website.financial.stock import Stock
@@ -148,11 +148,7 @@ def create_portfolio():
 	return render_template('create_portfolio.html', title = "Create Portfolio", form = form)
 
 
-
-@app.route('/portfolio/<int:portfolio_id>')
-@login_required
-def portfolio(portfolio_id):
-	portfolio_shell = PortfolioShell.query.get_or_404(portfolio_id)
+def create_portfolio_optimized(portfolio_shell)->Portfolio:
 	stock_shells = StockShell.query.filter_by(portfolio = portfolio_shell)
 	# Creating the portfolio object
 	stock_list = []
@@ -161,16 +157,30 @@ def portfolio(portfolio_id):
 		Check if stock is already saved as a csv. If yes then make exchange internal otherwise download.
 		"""
 		data = (0,)
-		#path = Path(f"website/static/{stock.name}({stock.ticker}).csv")
-		path = Path(url_for('static', filename= f"{stock.name}({stock.ticker}).csv"))
-		if path.is_file():
+		# internal_path_string = "website/" + url_for('static', filename= f"{stock.name}({stock.ticker}).csv") 
+		# path = Path(internal_path_string)
+		# if path.is_file():
+		if cache.get(f"{stock.name}({stock.ticker})") is not None:
 			data = (stock.name, stock.ticker, "INTERNAL", stock.n_shares)
 			flash(f"Stock {stock.name} has been found in the internal directories and has been loaded faster", "success")
 		else:
 			flash(f"Stock {stock.name} was loaded from online rather than internal directories", "danger")
 			data = (stock.name, stock.ticker, stock.exchange, stock.n_shares)
 		stock_list.append(data)
-	portfolio = Portfolio(stock_list, portfolio_shell.capital)
+
+	return Portfolio(stock_list, portfolio_shell.capital)
+
+
+
+
+
+@app.route('/portfolio/<int:portfolio_id>')
+@login_required
+def portfolio(portfolio_id):
+	portfolio_shell = PortfolioShell.query.get_or_404(portfolio_id)
+	stock_shells = StockShell.query.filter_by(portfolio = portfolio_shell)
+	# Creating the portfolio object
+	portfolio = create_portfolio_optimized(portfolio_shell)
 
 	return render_template('portfolio.html', title = portfolio_shell.name, portfolio = portfolio, portfolio_shell = portfolio_shell, stock_shells = stock_shells, max_date=str(date.today()))
 
@@ -185,12 +195,7 @@ def add_stock(portfolio_id):
 		return redirect(url_for('portfolio', portfolio_id=portfolio_id))
 	form = AddStockForm()
 	if form.validate_on_submit():
-		stock_list = []
-		stock_shells = StockShell.query.filter_by(portfolio= portfolio_shell)
-		for mini_stock in stock_shells:
-			data = (mini_stock.name, mini_stock.ticker, 'INTERNAL', mini_stock.n_shares)
-			stock_list.append(data)
-		portfolio = Portfolio(stock_list, portfolio_shell.capital)
+		portfolio = create_portfolio_optimized(portfolio_shell)
 		stock_data = (form.name.data, form.ticker.data, form.exchange.data, form.n_shares.data)
 		portfolio.buy_stock(stock_data, free= (not form.free.data))
 		if portfolio.stocks.get(form.name.data, None) is None:
@@ -238,13 +243,7 @@ def stock_change(portfolio_id):
 		return redirect(url_for('portfolio',portfolio_id=portfolio_shell.id))
 
 
-	stock = StockShell.query.get(stock_id)
-	stock_list = []
-	stock_shells = StockShell.query.filter_by(portfolio= portfolio_shell)
-	for mini_stock in stock_shells:
-		data = (mini_stock.name, mini_stock.ticker, 'INTERNAL', mini_stock.n_shares)
-		stock_list.append(data)
-	portfolio = Portfolio(stock_list, portfolio_shell.capital)
+	portfolio = create_portfolio_optimized(portfolio_shell)
 
 
 	if command == "buy":
@@ -324,11 +323,11 @@ def graph(portfolio_id):
 @app.route("/trials/<int:portfolio_id>")
 @login_required
 def trials(portfolio_id):
-	if current_user != PortfolioShell.query.get_or_404(portfolio_id).holder:
-		flash("That Portfolio Does Not Belong To You", "danger")
-		return redirect(url_for('home'))
-	flash(current_user)
-	a = PortfolioShell.query.get_or_404(portfolio_id)
-	flash(a)
-	flash(a.holder)
-	return render_template('trials.html', portfolio_id=portfolio_id)
+	context = {}
+	if portfolio_id == 1:
+		flash("We cached portfolio_id 1")
+		cache.set('id', portfolio_id)
+	else:
+		flash(f"cache value is {cache.get('id')}")
+
+	return render_template('trials.html', portfolio_id=portfolio_id, context = context)

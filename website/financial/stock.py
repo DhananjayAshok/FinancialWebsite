@@ -9,7 +9,7 @@ import quandl
 from alpha_vantage.timeseries import TimeSeries
 from datetime import datetime
 from website.financial import utility
-from flask import url_for
+from website import cache
 #endregion
 
 
@@ -128,8 +128,11 @@ Privately Will also
 
         dftemp = dftemp.rename(columns = {self.attribute: name})
         self.df = dftemp[[self.name]]
-        #save_location = url_for('static')
-        self.df.to_csv(f"website/static/{self.name}({self.ticker}).csv", index_label = "Date")
+        #save_location = "website/"  + url_for('static', filename = f"{self.name}({self.ticker}).csv")
+        #self.df.to_csv(save_location, index_label = "Date")
+        # Saving to cache
+        cache.set(f"{self.name}({self.ticker})", self.df)
+        
         self.start_date, self.end_date = self.analyzeBoundary()
 
     def _initializeBSE(self) -> pd.DataFrame: 
@@ -161,11 +164,12 @@ Privately Will also
     def _initializeINTERNAL(self) -> None:
         """
         Returns a pandas dataframe dftemp which needs to be renamed and joined.
-        To be used only when we know that a saved file already exists in local storage with the raw csv in it
-        The raw csv to have format
+        To be used only when we know that a cached file already exists in cache storage with the dataframe in it
+        The dataframe key to have format "name(ticker)""
         """
-        df = pd.read_csv(f'website/static/{self.name}({self.ticker}).csv', index_col = 'Date', parse_dates = True)
-        self.df = df
+        #internal_path = 'website/' + url_for('static', filename=f"{self.name}({self.ticker}).csv")
+        #df = pd.read_csv(internal_path, index_col = 'Date', parse_dates = True)
+        self.df = cache.get(f"{self.name}({self.ticker})")
         
     def __repr__(self):
         return f'Stock Object of :{self.name}'

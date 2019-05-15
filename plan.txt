@@ -3,12 +3,15 @@ Immediate
 	Figure out how to clear static once a day -> You really need to do this
 		And if ur url manual entering stuff on stock internal loading works
 		It seems to work.
+
 	Remove your flashes from loadportfolio optimizations that you're adding now.
 		Youre changin it from -> not urlfor to urlfor
-	To see static. 181.54 FB price
-	Static directory apparently is still in like /static
-	You have a bunch of functions where you optimize to INTERNAl. But if they enter in the URL manually before goin gto portfolio page you're fucked.
 
+	Static directory apparently is still in like /static
+	
+	You have a bunch of functions where you optimize to INTERNAl. But if they enter in the URL manually before goin gto portfolio page you're fucked.
+	
+	
 
 
 Short Term
@@ -35,6 +38,15 @@ Change Notes
 		And internal initializer to take from static
 		Saves to name(ticker)
 	Changing compute action return dict keys to just the name vs mentioning date
+	Now on 14-05-2019 17:13 IST
+		changing to save in static file using url_for and filename
+			In three place 
+				Stock Internal initializer
+				Stock saving portion
+				optimized portfolio creation path checker
+
+	Now on 15-05-2019 
+		Changing to save the dataframe in a flask-cache with key - name(ticker)
 
 Notes
 	Yo its fucked if stocks with different tickers are given the same name within a portfolio
