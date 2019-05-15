@@ -10,6 +10,8 @@
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 
+    <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/gif">
+
     {% if title %}
         <title>Stock Stalker - {{ title }}</title>
     {% else %}
@@ -45,10 +47,10 @@
     <main role="main" class="container">
       <div class="row">
         <div class="col-md-8">
-          {% with messages = get_flashed_messages(with_categories=True) %}
+          {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
               {% for category, message in messages %}
-                <div class = "alert alert-{{ category }}">
+                <div class="alert alert-{{ category }}">
                   {{ message }}
                 </div>
               {% endfor %}
@@ -58,13 +60,11 @@
         </div>
         <div class="col-md-4">
           <div class="content-section">
-            <h3>Our Sidebar</h3>
-            <p class='text-muted'>
+            <h3>Supported Exchanges</h3>
+            <p class='text-muted'>Others Coming Soon
               <ul class="list-group">
-                <li class="list-group-item list-group-item-light">Latest Posts</li>
-                <li class="list-group-item list-group-item-light">Announcements</li>
-                <li class="list-group-item list-group-item-light">Calendars</li>
-                <li class="list-group-item list-group-item-light">etc</li>
+                <li class="list-group-item list-group-item-light">BSE</li>
+                <li class="list-group-item list-group-item-light">NASDAQ</li>
               </ul>
             </p>
           </div>

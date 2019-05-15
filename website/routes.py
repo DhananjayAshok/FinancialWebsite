@@ -154,7 +154,7 @@ def create_portfolio_optimized(portfolio_shell)->Portfolio:
 	stock_list = []
 	for stock in stock_shells:
 		"""
-		Check if stock is already saved as a csv. If yes then make exchange internal otherwise download.
+		Check if stock is already saved in cache. If yes then make exchange internal otherwise download.
 		"""
 		data = (0,)
 		# internal_path_string = "website/" + url_for('static', filename= f"{stock.name}({stock.ticker}).csv") 
@@ -162,9 +162,7 @@ def create_portfolio_optimized(portfolio_shell)->Portfolio:
 		# if path.is_file():
 		if cache.get(f"{stock.name}({stock.ticker})") is not None:
 			data = (stock.name, stock.ticker, "INTERNAL", stock.n_shares)
-			flash(f"Stock {stock.name} has been found in the internal directories and has been loaded faster", "success")
 		else:
-			flash(f"Stock {stock.name} was loaded from online rather than internal directories", "danger")
 			data = (stock.name, stock.ticker, stock.exchange, stock.n_shares)
 		stock_list.append(data)
 
@@ -193,20 +191,25 @@ def add_stock(portfolio_id):
 	if current_user != portfolio_shell.holder:
 		flash("That Portfolio Does Not Belong To You. You Can Not Make Edits To It.", "danger")
 		return redirect(url_for('portfolio', portfolio_id=portfolio_id))
+
 	form = AddStockForm()
 	if form.validate_on_submit():
 		portfolio = create_portfolio_optimized(portfolio_shell)
 		stock_data = (form.name.data, form.ticker.data, form.exchange.data, form.n_shares.data)
-		portfolio.buy_stock(stock_data, free= (not form.free.data))
-		if portfolio.stocks.get(form.name.data, None) is None:
-			flash(f"Not Enough Money To Make This Purchase!. You have only {portfolio.capital}", "danger")
+		# First I make sure the portfolio does not already have a stock of that name
+		if stock_data[0] in portfolio.stocks:
+			flash(f"You Already Have A Stock In This Portfolio Of The Name {stock_data[0]}. Please Choose A Different Name", "danger")
 		else:
-			portfolio_shell.capital = portfolio.capital
-			stock = StockShell(name = form.name.data, ticker = form.ticker.data, exchange = form.exchange.data, n_shares = portfolio.stocks.get(form.name.data)[1], portfolio = portfolio_shell)
-			db.session.add(stock)
-			db.session.commit()
-			flash(f'Succesfully added Stock "{form.name.data}".', 'success')
-			return redirect(url_for('portfolio', portfolio_id = portfolio_shell.id))
+			portfolio.buy_stock(stock_data, free= (not form.free.data))
+			if portfolio.stocks.get(form.name.data, None) is None:
+				flash(f"Not Enough Money To Make This Purchase!. You have only {portfolio.capital}", "danger")
+			else:
+				portfolio_shell.capital = portfolio.capital
+				stock = StockShell(name = form.name.data, ticker = form.ticker.data, exchange = form.exchange.data, n_shares = portfolio.stocks.get(form.name.data)[1], portfolio = portfolio_shell)
+				db.session.add(stock)
+				db.session.commit()
+				flash(f'Succesfully added Stock "{form.name.data}".', 'success')
+				return redirect(url_for('portfolio', portfolio_id = portfolio_shell.id))
 	return render_template('add_stock.html', title = "Add Stock", form = form)
 
 @app.route("/stock/change/<int:portfolio_id>")
@@ -293,9 +296,7 @@ def analysis(portfolio_id):
 			frequency = int(frequency)
 		final = portfolio.simulateAnalysis(method=method, start_date=start_date, frequency=frequency)
 		return render_template('simulateAnalysis.html', method= method, actions=final)
-	elif command == 'displayGraph':
-		pass
-	flash("Invalid Command. (Wait for page to load before selecting)", "danger")
+	flash("Invalid Command. (Wait for page to load before selecting).", "danger")
 	return render_template('computeActions.html', method= "Invalid Method", actions={})
 
 

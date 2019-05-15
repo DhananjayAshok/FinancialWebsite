@@ -1,4 +1,136 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>Home</h1>
+<div>
+	<center>
+		<h3>
+			Hello and welcome to my Stock Stalker Website! 
+		<h3>
+		<h5>
+			Below you will find a brief description of what this application can do, what it cannot do and how to use it.
+			You can also find build notes and credits below.
+		</h5>
+	</center>
+</div>
+<article class="media content-section">
+    <div class="media-body">
+        <div class="article-metadata"><b>
+            General Purpose
+        </div></b>
+            <p class="article-content"> The Stock Stalker application helps you keep track of and perform pattern analysis on stocks from exchanges around the world. At core it is a very simple paper trading application.</p>         
+    </div>
+</article>
+
+<article class="media content-section">
+    <div class="media-body">
+        <div class="article-metadata"><b>
+            Functionalities
+        </div></b>
+            <p class="article-content"> With the application you can
+            	<ul>
+            		<li> Create and maintain multiple Portfolios </li>
+            		<li> Add Stocks to your Portfolios </li>
+            		<li> Monitor the changing of the daily prices of your stocks </li>
+            		<li> Perform pattern analysis on the stocks in your portfolio, giving you suggested courses of actions to take </li>
+            	</ul>
+             </p>         
+    </div>
+</article>
+
+<article class="media content-section">
+    <div class="media-body">
+        <div class="article-metadata"><b>
+            Caveats
+        </div></b>
+            <p class="article-content"> 
+            	This application is not actually a trading account substitute. As a result everything done on this site is purely for study and simlutation purposes, no money is actually exchanged, no stocks actually purchased. To actually trade stocks one would need to follow the appropriate procedure depending on the area they wish to trade from.
+             </p>         
+    </div>
+</article>
+
+<article class="media content-section">
+    <div class="media-body">
+        <div class="article-metadata"><b>
+            Build Details
+        </div></b>
+            <p class="article-content"> This website was built with the following tools
+            	<ul>
+            		<li> Python (Flask) </li>
+            		<li> JavaScript </li>
+            		<li> HTML/CSS </li>
+            		<li> Database: 
+            			<ul>
+            				<li> SQLAlchemy </li>
+            				<li> Heroku Postgres </li>
+            			</ul>
+            		</li>
+            		<li> Final Deployment: <a href="https://www.heroku.com/", target="_blank">Heroku</a></li>
+            		<li> Open Source Free APIs: 
+            			<ul>
+            				<li> BSE : <a href="https://www.quandl.com/", target="_blank">Quandl</a></li>
+            				<li> NASDAQ: <a href="https://www.alphavantage.co/", target="_blank">Alpha Vantage</a></li>
+            			</ul>
+            		</li>
+            	</ul>
+             </p>         
+    </div>
+</article>
+
+<article class="media content-section">
+    <div class="media-body">
+        <div class="article-metadata"><b>
+            Credits
+        </div></b>
+            <p class="article-content"> Most of the code for the project was created by me (Dhananjay Ashok) but the following resources were not my own creation and were found online.
+            	<ul>
+            		<li> Basic HTML outline and CSS Styling
+            			<ul>
+            				<li>Source: <a href="https://github.com/CoreyMSchafer/code_snippets/tree/master/Python/Flask_Blog", target="_blank">CoreySchafer's Flask Blog Tutorial</a></li>
+            			</ul>
+            		</li>
+            		<li> Bollinger Bands(TM) analysis method
+            			<ul>
+            				<li> Source : <a href="https://www.bollingerbands.com/", target="_blank">John Bollinger</a></li>
+            			</ul>
+            		</li>
+            		<li> Website FavIcon
+            			<ul>
+            				<li> Source : <a href="https://icons8.com/icons", target="_blank">Icons8</a></li>
+            			</ul>
+            		</li>
+            	</ul>
+             </p>         
+    </div>
+</article>
+
+<article class="media content-section">
+    <div class="media-body">
+        <div class="article-metadata"><b>
+            Learning Resources
+        </div></b>
+            <p class="article-content"> The following resources were used for learning in the creation of this website
+            	<ul>
+            		<li> Flask Tutorial By Corey Schafer
+            			<ul>
+            				<li>Source: <a href="https://www.youtube.com/playlist?list=PL-osiE80TeTs4UjLw5MM6OjgkjFeUxCYH", target="_blank">CoreySchafer's Flask Blog Tutorial</a></li>
+            			</ul>
+            		</li>
+            		<li> Django Tutorial By Corey Schafer
+            			<ul>
+            				<li> Source : <a href="https://www.youtube.com/playlist?list=PL-osiE80TeTtoQCKZ03TU5fNfx2UY6U4p", target="_blank">Corey Schafer's Django Tutorial </a></li>
+            			</ul>
+            		</li>
+            		<li> CS50's Web Programming with Python and JavaScript by HarvardX on EdX
+            			<ul>
+            				<li> Source : <a href="https://courses.edx.org/courses/course-v1:HarvardX+CS50W+Web/course/", target="_blank">CS50 Web Programming</a></li>
+            			</ul>
+            		</li>
+            	</ul>
+             </p>         
+    </div>
+</article>
+
+
+
+
+
 {% endblock content %}

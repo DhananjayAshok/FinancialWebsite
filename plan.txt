@@ -1,13 +1,8 @@
 Immediate
-
-	Remove your flashes from loadportfolio optimizations that you're adding now.
-		Youre changin it from -> not urlfor to urlfor
-	
-	Find out which python dependencies you actually need. 	
+	Write details in the Home page
 
 
 Short Term
-	Figure out how the pd.to_csv works online
 	To put graphs on the page instead of needing button (Can use AJAX) First part of front end video CS50 Web XMLHTTP request
 
 
@@ -39,6 +34,3 @@ Change Notes
 
 	Now on 15-05-2019 
 		Changing to save the dataframe in a flask-cache with key - name(ticker)
-
-Notes
-	Yo its fucked if stocks with different tickers are given the same name within a portfolio

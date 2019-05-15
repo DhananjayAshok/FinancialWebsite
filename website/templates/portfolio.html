@@ -1,18 +1,20 @@
 {% extends "layout.html" %}
 {% block content %}
     <script src="{{ url_for('static', filename='analysisDirector.js') }}"></script>
-    <h1> Analyzing {{ portfolio_shell.name }}</h1>
+    <center>
+        <h2> Analyzing {{ portfolio_shell.name }}</h2>
+    </center>
     <u>Overall Value:</u> {{ portfolio.get_value() }}<br>
     <u>Asset Value:</u> {{ portfolio.get_asset_value() }}<br>
     <u>Capital Value:</u> {{ portfolio.capital }}
-    <h2> Following Stocks Held </h2>
+    <h5> Following Stocks Held </h5>
     <a href="{{ url_for('stock_change', portfolio_id=portfolio_shell.id) }}", id= "stock_change_base-link"></a>
     {% for stock in stock_shells %}
         <article class="media content-section">
           <div class="media-body">
-            <div class="article-metadata">
+            <div class="article-metadata"><b>
               <a class="mr-2">{{ stock.name }} held on {{ stock.exchange }}</a>
-            </div>
+            </div></b>
             <p class="article-content">Shares Held: {{ stock.n_shares }}</p>
             <p class="article-content">Current Price: {{ portfolio.stocks[stock.name][0].get_current_price() }}</p>
             Buy Stock: <input type="number", id="buy_stock-n({{ stock.id }})", onchange="set_stock_buy_url('{{ stock.id }}');">
@@ -49,7 +51,7 @@
                             </a> 
                             <select id="computeActions-methods", onchange="set_computeActions_url();">
                                 <option value="bollingerbands">BollingerBands (TM)</option>
-                                <option value="something">Something Else (Does not work, just here for scroll down)</option>
+                                <option value="bollingerbands">Placeholder (etc)</option>
                             </select>
                         </li>
                         <li class="list-group-item list-group-item-light">
@@ -58,7 +60,7 @@
                             </a>
                             <select id="simulateAnalysis-methods", onchange="set_simulateAnalysis_url();">
                                 <option value="bollingerbands">BollingerBands (TM)</option>
-                                <option value="something">Something Else (Does not work, just here for scroll down)</option>
+                                <option value="bollingerbands">Placeholder (etc)</option>
                             </select>
                             Start Date
                             <input type="date" id="simulateAnalysis-date" name="date"
