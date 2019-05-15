@@ -1,17 +1,9 @@
 Immediate
 
-	Figure out how to clear static once a day -> You really need to do this
-		And if ur url manual entering stuff on stock internal loading works
-		It seems to work.
-
 	Remove your flashes from loadportfolio optimizations that you're adding now.
 		Youre changin it from -> not urlfor to urlfor
-
-	Static directory apparently is still in like /static
 	
-	You have a bunch of functions where you optimize to INTERNAl. But if they enter in the URL manually before goin gto portfolio page you're fucked.
-	
-	
+	Find out which python dependencies you actually need. 	
 
 
 Short Term
