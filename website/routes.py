@@ -167,11 +167,20 @@ def create_portfolio_optimized(portfolio_shell)->Portfolio:
 			data = (stock.name, stock.ticker, stock.exchange, stock.n_shares)
 		stock_list.append(data)
 
-	return Portfolio(stock_list, portfolio_shell.capital)
+	try:
+		portfolio = Portfolio(stock_list, portfolio_shell.capital)
+	except:
+		return None
+	else:
+		return portfolio
 
-
-
-
+def create_stock_optimized(stock_shell)->Stock:
+	stock = stock_shell
+	if cache.get(f"{stock.name}({stock.ticker})") is not None:
+		#flash(f"At this point the internal data exists for {stock.name}({stock.ticker}).")
+		return Stock(stock.name, stock.ticker, "INTERNAL")
+	else:
+		return Stock(stock.name, stock.ticker, stock.exchange)
 
 @app.route('/portfolio/<int:portfolio_id>')
 @login_required
@@ -271,12 +280,7 @@ def stock_change(portfolio_id):
 def analysis(portfolio_id):
 	portfolio_shell = PortfolioShell.query.get_or_404(portfolio_id)
 	command = request.args.get('command')
-	stock_list = []
-	stock_shells = StockShell.query.filter_by(portfolio= portfolio_shell)
-	for stock in stock_shells:
-		data = (stock.name, stock.ticker, 'INTERNAL', stock.n_shares)
-		stock_list.append(data)
-	portfolio = Portfolio(stock_list, portfolio_shell.capital)
+	portfolio = create_portfolio_optimized(portfolio_shell)
 
 	if command == 'computeActions':
 		method = request.args.get('method')
@@ -312,7 +316,7 @@ def graph(portfolio_id):
 		if candidate.name == name:
 			stock = candidate
 			break
-	a = Stock(stock.name, stock.ticker, "INTERNAL")
+	a = create_stock_optimized(stock)
 	fig = a.create_Graph(method, a.implimentAnalysis(method))
 	data = mpld3.fig_to_html(fig)
 	plt.close()

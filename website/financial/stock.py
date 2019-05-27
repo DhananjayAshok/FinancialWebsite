@@ -174,7 +174,7 @@ Privately Will also
         #internal_path = 'website/' + url_for('static', filename=f"{self.name}({self.ticker}).csv")
         #df = pd.read_csv(internal_path, index_col = 'Date', parse_dates = True)
         self.df = cache.get(f"{self.name}({self.ticker})")
-        flash(f"""{self.name}({self.ticker}) pulled internally with data = {self.df} \n\n\n and the get = {cache.get(f"{self.name}({self.ticker})")}""")
+        #flash(f"""{self.name}({self.ticker}) pulled internally with data = {self.df} \n\n\n and the get = {cache.get(f"{self.name}({self.ticker})")}""")
         
     def __repr__(self):
         return f'Stock Object of :{self.name}'
