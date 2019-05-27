@@ -161,7 +161,7 @@ def create_portfolio_optimized(portfolio_shell)->Portfolio:
 		# path = Path(internal_path_string)
 		# if path.is_file():
 		if cache.get(f"{stock.name}({stock.ticker})") is not None:
-			flash(f"At this point the internal data exists for {stock.name}({stock.ticker}).")
+			#flash(f"At this point the internal data exists for {stock.name}({stock.ticker}).")
 			data = (stock.name, stock.ticker, "INTERNAL", stock.n_shares)
 		else:
 			data = (stock.name, stock.ticker, stock.exchange, stock.n_shares)
