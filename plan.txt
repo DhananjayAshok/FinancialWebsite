@@ -1,5 +1,5 @@
 Immediate
-	Write details in the Home page
+	Fix the cache loading glitch
 
 
 Short Term

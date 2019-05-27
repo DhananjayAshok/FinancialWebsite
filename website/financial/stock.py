@@ -10,6 +10,9 @@ from alpha_vantage.timeseries import TimeSeries
 from datetime import datetime
 from website.financial import utility
 from website import cache
+
+# debugging
+from flask import flash
 #endregion
 
 
@@ -119,6 +122,7 @@ Privately Will also
         if exchange == "INTERNAL":
             self._initializeINTERNAL()
             self.start_date, self.end_date = self.analyzeBoundary()
+            cache.set(f"{self.name}({self.ticker})", self.df)
             return
       
         self.attribute = attribute_dict[exchange]
@@ -170,6 +174,7 @@ Privately Will also
         #internal_path = 'website/' + url_for('static', filename=f"{self.name}({self.ticker}).csv")
         #df = pd.read_csv(internal_path, index_col = 'Date', parse_dates = True)
         self.df = cache.get(f"{self.name}({self.ticker})")
+        flash(f"""{self.name}({self.ticker}) pulled internally with data = {self.df} \n\n\n and the get = {cache.get(f"{self.name}({self.ticker})")}""")
         
     def __repr__(self):
         return f'Stock Object of :{self.name}'
