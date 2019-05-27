@@ -248,6 +248,7 @@ def stock_change(portfolio_id):
 		args['n']= "Variable number was not an integer"
 	try: 
 		stock_id = int(request.args.get('stock_id'))
+		stock = StockShell.query.get_or_404(stock_id)
 	except:
 		args['stock_id']="Stock ID did not exist"
 
