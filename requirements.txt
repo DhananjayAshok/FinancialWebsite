@@ -55,7 +55,7 @@ python-dateutil==2.7.5
 python-engineio==3.5.1
 python-socketio==3.1.2
 pytz==2018.9
-PyYAML==5.1
+PyYAML==5.4
 Quandl==3.4.8
 requests==2.21.0
 scipy==1.2.1
